@@ -29,9 +29,9 @@ public class FilmController {
     }
 
     @PutMapping()
-    public Film createPut(@RequestBody Film Film) {
+    public Film createPut(@RequestBody Film film) {
         log.info("Поступил запрос на изменения фильма.");
-        return updateFilm(Film);
+        return updateFilm(film);
     }
 
     public Film createFilm(Film film) {
