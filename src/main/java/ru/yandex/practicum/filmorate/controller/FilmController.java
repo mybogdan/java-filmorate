@@ -2,53 +2,64 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.FilmException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-@RestController
-@RequestMapping("/films")
+
 @Slf4j
+@RestController
+@RequestMapping(value = "/films", produces = "application/json")
 public class FilmController {
 
-    Map<Integer, Film> films = new HashMap<>();
+    private final HashMap<Integer, Film> films = new HashMap<>();
+    private int idForFilm = 0;
 
-    @GetMapping
-    public Collection<Film> getFilm() {
-        log.info("Поступил запрос на получение списка всех фильмов.");
-        return films.values();
+    @PostMapping
+    public Film create(@Valid @RequestBody Film film) {
+        filmValidation(film);
+        film.setId(getIdForFilm());
+        films.put(film.getId(), film);
+        log.info("Поступил запрос на добавление фильма. Фильм добавлен");
+
+        return film;
     }
 
-    @PostMapping()
-    public Film createPost(@RequestBody Film film) {
-        log.info("Поступил запрос на добавление фильма.");
-        return createFilm(film);
-    }
-
-    @PutMapping()
-    public Film createPut(@RequestBody Film film) {
-        log.info("Поступил запрос на изменения фильма.");
-        return updateFilm(film);
-    }
-
-    public Film createFilm(Film film) {
-        if (films.containsKey(film.getId())) {
-            throw new AlreadyExistException(String.format(
-                    "Фильм %s уже есть в списке.",
-                    film.getName()
-            ));
+    @PutMapping
+    public Film changeFilm(@Valid @RequestBody Film film) {
+        if (films.get(film.getId()) != null) {
+            filmValidation(film);
+            films.put(film.getId(), film);
+            log.info("Поступил запрос на изменения фильма. Фильм изменён.");
+        } else {
+            log.error("Поступил запрос на изменения фильма. Фильм не найден.");
+            throw new FilmException("Film not found.");
         }
-        films.put(film.getId(), film);
         return film;
     }
 
-    public Film updateFilm(Film film) {
-        films.put(film.getId(), film);
+    @GetMapping()
+    public List<Film> getFilms() {
+        return new ArrayList<>(films.values());
+    }
 
-        return film;
+
+    private int getIdForFilm() {
+        return ++idForFilm;
+    }
+
+    private void filmValidation(Film film) throws ValidationException {
+        if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
+            throw new ValidationException("Некорректно указана дата релиза.");
+
+        }
+
     }
 
 }

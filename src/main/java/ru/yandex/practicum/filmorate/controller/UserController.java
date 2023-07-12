@@ -2,54 +2,61 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.UserException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-@RestController
-@RequestMapping("/users")
+
 @Slf4j
-
+@RestController
+@RequestMapping(value = "/users", produces = "application/json")
 public class UserController {
 
-    Map<Integer, User> users = new HashMap<>();
+    private final HashMap<Integer, User> users = new HashMap<>();
+    private int idForUser = 0;
+
+
+    @PostMapping
+    public User create(@Valid @RequestBody User user) {
+        userValidation(user);
+        user.setId(getIdForUser());
+        users.put(user.getId(), user);
+        log.info("Поступил запрос на добавление пользователя. Пользователь добавлен.");
+        return user;
+    }
+
+    @PutMapping
+    public User changeUser(@Valid @RequestBody User user) {
+        if (users.get(user.getId()) != null) {
+            userValidation(user);
+            users.put(user.getId(), user);
+            log.info("Поступил запрос на изменения пользователя. Пользователь изменён.");
+        } else {
+            log.error("Поступил запрос на изменения пользователя. Пользователь не найден.");
+            throw new UserException("User not found.");
+        }
+        return user;
+    }
 
     @GetMapping
-    public Collection<User> getFilm() {
-        log.info("Поступил запрос на получение списка пользователей.");
-        return users.values();
+    public List<User> getUsers() {
+        return new ArrayList<>(users.values());
     }
 
-    @PostMapping()
-    public User createPost(@RequestBody User user) {
-        log.info("Поступил запрос на создание пользователя.");
-        return createUser(user);
+
+    private int getIdForUser() {
+        return ++idForUser;
     }
 
-    @PutMapping()
-    public User createPut(@RequestBody User user) {
-        log.info("Поступил запрос на обновление пользователя.");
-        return updateUser(user);
-    }
-
-    public User createUser(User user) {
-        if (users.containsKey(user.getId())) {
-            throw new AlreadyExistException(String.format(
-                    "Пользователь с электронной почтой %s уже зарегистрирован.",
-                    user.getEmail()
-            ));
+    private void userValidation(User user) throws ValidationException {
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
         }
-        users.put(user.getId(), user);
-        return user;
-    }
-
-    public User updateUser(User user) {
-        users.put(user.getId(), user);
-
-        return user;
     }
 
 }
