@@ -12,9 +12,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 @Slf4j
+
 public class UserController {
 
     Map<Integer, User> users = new HashMap<>();
+
     @GetMapping
     public Collection<User> getFilm() {
         log.info("Поступил запрос на получение списка пользователей.");
@@ -26,6 +28,7 @@ public class UserController {
         log.info("Поступил запрос на создание пользователя.");
         return createUser(user);
     }
+
     @PutMapping()
     public User createPut(@RequestBody User user) {
         log.info("Поступил запрос на обновление пользователя.");
