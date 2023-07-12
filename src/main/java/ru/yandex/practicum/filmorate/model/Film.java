@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Data
 public class Film {
 
-    int id;
+    private Integer id;
     @NotBlank
     private String name;
     @NotBlank
