@@ -22,12 +22,14 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Поступил запрос на добавление фильма.");
+        filmService.filmValidation(film);
         return filmStorage.addFilm(film);
     }
 
     @PutMapping
     public Film changeFilm(@Valid @RequestBody Film film) {
         log.info("Поступил запрос на изменения фильма.");
+        filmService.filmValidation(film);
         return filmStorage.updateFilm(film);
     }
 

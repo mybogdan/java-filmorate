@@ -24,12 +24,14 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Поступил запрос на создание пользователя.");
+        userService.userValidation(user);
         return userStorage.addUser(user);
     }
 
     @PutMapping
     public User changeUser(@Valid @RequestBody User user) {
         log.info("Поступил запрос на обновление пользователя.");
+        userService.userValidation(user);
         return userStorage.updateUser(user);
     }
 

@@ -21,7 +21,6 @@ public interface UserStorage {
     // Метод удаления из друзей
     User deleteFriend(Integer userId, Integer friendId);
 
-
     // Метод для обновления пользователя
     List<User> getMutualFriends(Integer id, Integer otherId);
 
