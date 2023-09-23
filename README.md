@@ -1,4 +1,4 @@
-<p align="left">java-filmorate<br>Template repository for Filmorate project.</p>
+<h3 align="left">java-filmorate</h3>
 
 ###
 
