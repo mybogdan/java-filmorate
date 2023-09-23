@@ -3,7 +3,7 @@
 ###
 
 <div align="center">
-  <img height="400" src="https://i.ibb.co/hH6CHy4/2023-09-23-181620.png"  />
+  <img height="400" src="https://github.com/mybogdan/java-filmorate/blob/add-database/ER.png"  />
 </div>
 
 ###
