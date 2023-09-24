@@ -21,30 +21,39 @@
 ###
 
 ~~~~sql
-SELECT * FROM films
+SELECT *
+FROM film
 ~~~~
 - Выборка одного фильма с id 1
 ~~~~sql
-SELECT * FROM films WHERE id = 1
+SELECT *
+FROM film
+WHERE id = 1
 ~~~~
 - Выборка всех пользователей
 ~~~~sql
-SELECT * FROM users
+SELECT *
+FROM user
 ~~~~
 - Выборка одного пользователя с id = 1
 ~~~~sql
-SELECT * FROM users WHERE id = 1
+SELECT *
+FROM user
+WHERE id = 1
 ~~~~
 
 - Запрос на получение топ 10 популярных фильмов
 ~~~~sql
 SELECT *
 FROM film
-WHERE film_id IN (SELECT film_id, count(user_id) AS likes_count
-FROM likes
-GROUP BY film_id
-ORDER BY likes_count DESC
-LIMIT (10));
+WHERE film_id IN (
+  SELECT
+    film_id,
+    count(user_id) AS likes_count
+  FROM like
+  GROUP BY film_id
+  ORDER BY likes_count DESC
+  LIMIT (10));
 ~~~~
 
 ###
