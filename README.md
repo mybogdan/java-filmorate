@@ -1,4 +1,12 @@
-<h3 align="left">java-filmorate</h3>
+<h3 align="left">Приложение Filmorate</h3>
+
+###
+
+<p align="left">Сервис, который будет работать с фильмами и оценками пользователей, а также возвращать топ фильмов, рекомендованных к просмотру.</p>
+
+###
+
+<h4 align="left">ER - модель</h4>
 
 ###
 
@@ -8,6 +16,35 @@
 
 ###
 
-<p align="left">/* Лайки */<br><br>SELECT <br>	f.film,<br>	l.user_id<br>FROM film AS f<br>INNER JOIN like AS l ON f.film_id = l.like_id;<br><br><br>/* Жанр фильма */<br><br>SELECT <br>	f.film,<br>	g.genre<br>FROM film AS f<br>INNER JOIN film_genre AS fg ON f.film_id = fg.film_id;<br>INNER JOIN genre AS g ON fg.film_id = g.genre_id;</p>
+<h4 align="left">Основные запросы</h4>
+
+###
+
+~~~~sql
+SELECT * FROM films
+~~~~
+- Выборка одного фильма с id 1
+~~~~sql
+SELECT * FROM films WHERE id = 1
+~~~~
+- Выборка всех пользователей
+~~~~sql
+SELECT * FROM users
+~~~~
+- Выборка одного пользователя с id = 1
+~~~~sql
+SELECT * FROM users WHERE id = 1
+~~~~
+
+- Запрос на получение топ 10 популярных фильмов
+~~~~sql
+SELECT *
+FROM film
+WHERE film_id IN (SELECT film_id, count(user_id) AS likes_count
+FROM likes
+GROUP BY film_id
+ORDER BY likes_count DESC
+LIMIT (10));
+~~~~
 
 ###
