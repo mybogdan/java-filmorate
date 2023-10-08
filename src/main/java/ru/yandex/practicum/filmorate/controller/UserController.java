@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/users", produces = "application/json")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserStorage userStorage;
@@ -24,21 +24,19 @@ public class UserController {
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("Поступил запрос на создание пользователя.");
-        userService.userValidation(user);
         return userStorage.addUser(user);
     }
 
     @PutMapping
     public User changeUser(@Valid @RequestBody User user) {
         log.info("Поступил запрос на обновление пользователя.");
-        userService.userValidation(user);
         return userStorage.updateUser(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public User addFriend(@PathVariable String id, @PathVariable String friendId) {
         log.info("Поступил запрос на добавления в друзья.");
-        return userService.addFriend(Integer.parseInt(id), Integer.parseInt(friendId));
+       return userService.addFriend(Integer.parseInt(id), Integer.parseInt(friendId));
     }
 
     @GetMapping
@@ -73,3 +71,5 @@ public class UserController {
     }
 
 }
+
+
