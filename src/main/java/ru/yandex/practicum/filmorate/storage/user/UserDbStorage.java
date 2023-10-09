@@ -28,20 +28,11 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findAllUsers() {
-        List<User> users = new ArrayList<>();
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet("SELECT * FROM users");
-        while (rowSet.next()) {
-            User user = User.builder()
-                    .id(rowSet.getInt("user_id"))
-                    .name(rowSet.getString("name"))
-                    .login(rowSet.getString("login"))
-                    .email(rowSet.getString("email"))
-                    .birthday(Objects.requireNonNull(rowSet.getDate("birthday")).toLocalDate())
-                    .build();
-            users.add(user);
-        }
-        return users;
+        String sqlQuery = "SELECT * FROM users ";
+        log.info("Все пользователи получены.");
+        return jdbcTemplate.query(sqlQuery, this::mapRowToUser);
     }
+
 
     @Override
     public User addUser(User user) {

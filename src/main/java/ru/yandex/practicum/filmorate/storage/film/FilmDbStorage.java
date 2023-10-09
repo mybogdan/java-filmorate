@@ -31,24 +31,13 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findAllFilms() {
-        List<Film> films = new ArrayList<>();
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT film_id, name, description, release_date," +
-                " duration, rating_mpa_id FROM films");
-        while (filmRows.next()) {
-            Film film = Film.builder()
-                    .id(filmRows.getInt("film_id"))
-                    .name(filmRows.getString("name"))
-                    .description(filmRows.getString("description"))
-                    .releaseDate(Objects.requireNonNull(filmRows.getDate("release_date")).toLocalDate())
-                    .duration(filmRows.getInt("duration"))
-                    .mpa(mpaDbStorage.getMpa(filmRows.getInt("rating_mpa_id")))
-                    .build();
-            film.setGenres(genreDbStorage.getGenreForCurrentFilm(film.getId()));
-            film.setLikes(likeDbStorage.getLikesForCurrentFilm(film.getId()));
 
-            films.add(film);
-        }
-        return films;
+        String sqlQuery = "SELECT film_id, name, description, release_date," +
+                " duration, rating_mpa_id FROM films";
+
+        log.info("Все фильмы получены.");
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
+
     }
 
     @Override
@@ -112,10 +101,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRating(int count) {
-        String sqlQuery = "SELECT films.*, COUNT(l.film_id) as count FROM films\n" +
-                "LEFT JOIN likes l ON films.film_id=l.film_id\n" +
-                "GROUP BY films.film_id\n" +
-                "ORDER BY count DESC\n" +
+        String sqlQuery = "SELECT films.*, COUNT(l.film_id) as count FROM films " +
+                "LEFT JOIN likes l ON films.film_id=l.film_id " +
+                "GROUP BY films.film_id " +
+                "ORDER BY count DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
     }

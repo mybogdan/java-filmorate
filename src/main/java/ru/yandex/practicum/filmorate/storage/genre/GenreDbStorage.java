@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.genre;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GenreDbStorage implements GenreStorage {
@@ -20,16 +22,11 @@ public class GenreDbStorage implements GenreStorage {
 
 
     public List<Genre> findAll() {
-        List<Genre> genreList = new ArrayList<>();
-        SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT genre_id, name FROM genre_type");
-        while (genreRows.next()) {
-            Genre genre = Genre.builder()
-                    .id(genreRows.getInt("genre_id"))
-                    .name(genreRows.getString("name"))
-                    .build();
-            genreList.add(genre);
-        }
-        return genreList;
+
+        String sqlQuery = "SELECT genre_id, name FROM genre_type";
+        log.info("Все жанры получены.");
+        return jdbcTemplate.query(sqlQuery, this::mapRowToGenre);
+
     }
 
     public Set<Genre> getGenreForCurrentFilm(int id) {
@@ -37,7 +34,7 @@ public class GenreDbStorage implements GenreStorage {
         SqlRowSet genreRows = jdbcTemplate.queryForRowSet("SELECT id, film_id, genre_id FROM genre " +
                 "ORDER BY genre_id ASC");
         while (genreRows.next()) {
-            if (genreRows.getLong("film_id") == id) {
+            if (genreRows.getInt("film_id") == id) {
                 genreSet.add(getGenreForId(genreRows.getInt("genre_id")));
             }
         }

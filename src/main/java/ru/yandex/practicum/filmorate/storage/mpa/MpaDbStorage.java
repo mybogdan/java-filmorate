@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.mpa;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
@@ -21,16 +23,10 @@ public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Mpa> findAll() {
-        List<Mpa> mpaList = new ArrayList<>();
-        SqlRowSet mpaRows = jdbcTemplate.queryForRowSet("SELECT rating_mpa_id, name FROM mpa_type");
-        while (mpaRows.next()) {
-            Mpa mpa = Mpa.builder()
-                    .id(mpaRows.getInt("rating_mpa_id"))
-                    .name(mpaRows.getString("name"))
-                    .build();
-            mpaList.add(mpa);
-        }
-        return mpaList;
+
+        String sqlQuery = "SELECT rating_mpa_id, name FROM mpa_type";
+        log.info("Все MPA получены.");
+        return jdbcTemplate.query(sqlQuery, this::mapRowToMpa);
     }
 
     public Mpa getMpa(int mpaId) {
